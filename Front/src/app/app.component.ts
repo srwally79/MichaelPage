@@ -1,13 +1,14 @@
 import { Component, inject } from '@angular/core';
 import { NgClass } from '@angular/common';
 import { Router, RouterOutlet } from '@angular/router';
+import { RouterLink, RouterLinkActive } from '@angular/router';
 import { AuthService } from './core/services/auth.service';
 import { NotificationService } from './core/services/notification.service';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [NgClass, RouterOutlet],
+  imports: [NgClass, RouterLink, RouterLinkActive, RouterOutlet],
   templateUrl: './app.component.html'
 })
 export class AppComponent {

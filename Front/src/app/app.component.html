@@ -8,7 +8,13 @@
       </div>
     </div>
     @if (authService.isAuthenticated()) {
-      <button class="btn btn-outline-secondary btn-sm" type="button" (click)="logout()">Cerrar sesión</button>
+      <div class="d-flex align-items-center gap-3">
+        <nav class="nav nav-pills" aria-label="Navegación principal">
+          <a class="nav-link" routerLink="/tasks" routerLinkActive="active" ariaCurrentWhenActive="page">Tareas</a>
+          <a class="nav-link" routerLink="/users" routerLinkActive="active" ariaCurrentWhenActive="page">Usuarios</a>
+        </nav>
+        <button class="btn btn-outline-secondary btn-sm" type="button" (click)="logout()">Cerrar sesión</button>
+      </div>
     }
   </header>
 

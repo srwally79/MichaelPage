@@ -20,4 +20,5 @@ The Angular proxy forwards `/api` requests to the API. Open `http://localhost:42
 - Task listing and filters by status and user.
 - Reactive task creation with required assignee and JSON object validation.
 - Task status updates, with the Pending-to-Done transition disabled in the interface.
+- User management with user creation and listing.
 - Visible success and error messages.

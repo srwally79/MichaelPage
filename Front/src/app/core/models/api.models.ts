@@ -17,6 +17,12 @@ export interface User {
   email: string;
 }
 
+export interface CreateUserRequest {
+  name: string;
+  email: string;
+  password: string;
+}
+
 export interface TaskStatus {
   id: string;
   name: string;

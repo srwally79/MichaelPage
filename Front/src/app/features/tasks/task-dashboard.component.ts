@@ -4,6 +4,7 @@ import { ReactiveFormsModule, FormBuilder, Validators, ValidatorFn } from '@angu
 import { TaskItem, TaskStatus, User } from '../../core/models/api.models';
 import { NotificationService } from '../../core/services/notification.service';
 import { TaskService } from '../../core/services/task.service';
+import { UserService } from '../../core/services/user.service';
 
 const jsonObjectValidator: ValidatorFn = control => {
   if (!control.value) return null;
@@ -26,6 +27,7 @@ const jsonObjectValidator: ValidatorFn = control => {
 export class TaskDashboardComponent implements OnInit {
   private readonly formBuilder = inject(FormBuilder);
   private readonly taskService = inject(TaskService);
+  private readonly userService = inject(UserService);
   private readonly notificationService = inject(NotificationService);
 
   readonly tasks = signal<TaskItem[]>([]);
@@ -111,7 +113,7 @@ export class TaskDashboardComponent implements OnInit {
   }
 
   private loadUsers(): void {
-    this.taskService.getUsers().subscribe({
+    this.userService.getUsers().subscribe({
       next: users => this.users.set(users),
       error: () => this.users.set([])
     });
