@@ -19,7 +19,7 @@ dotnet run --project Api/Api.csproj
 
 The SQL schema must already be created from `../ScriptBBDD.sql`. The API does not create or migrate tables on startup. The Angular development origin `http://localhost:4200` is allowed by CORS.
 
-Swagger UI is available at `/swagger`; it includes a Bearer authorization button for protected routes.
+Swagger UI is available at `/swagger`. Sign in there first; the browser then sends the HttpOnly cookie automatically to protected routes.
 
 ## Endpoints
 

@@ -10,7 +10,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi;
-using Api.Swagger;
 using Api.Security;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -66,7 +65,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 await context.Response.WriteAsJsonAsync(new
                 {
                     message = "Unauthorized.",
-                    details = new[] { "A valid bearer token is required." }
+                    details = new[] { "A valid authentication cookie is required." }
                 }, context.HttpContext.RequestAborted);
             },
             OnForbidden = async context =>
@@ -85,15 +84,12 @@ builder.Services.AddAuthorization();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
 {
-    options.SwaggerDoc("v1", new OpenApiInfo { Title = "MichaelPage API", Version = "v1" });
-    options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    options.SwaggerDoc("v1", new OpenApiInfo
     {
-        Type = SecuritySchemeType.Http,
-        Scheme = "bearer",
-        BearerFormat = "JWT",
-        Description = "JWT bearer token returned by POST /api/auth/login."
+        Title = "MichaelPage API",
+        Version = "v1",
+        Description = "Inicia sesión desde esta interfaz; el navegador gestionará la cookie HttpOnly automáticamente."
     });
-    options.OperationFilter<AuthorizeOperationFilter>();
 });
 builder.Services.AddCors(options => options.AddPolicy("Frontend", policy =>
     policy.WithOrigins("http://localhost:4200").AllowAnyHeader().AllowAnyMethod().AllowCredentials()));
@@ -124,7 +120,7 @@ app.UseStatusCodePages(async statusContext =>
     var (message, detail) = response.StatusCode switch
     {
         StatusCodes.Status400BadRequest => ("Bad request.", "Request data is invalid."),
-        StatusCodes.Status401Unauthorized => ("Unauthorized.", "A valid bearer token is required."),
+        StatusCodes.Status401Unauthorized => ("Unauthorized.", "A valid authentication cookie is required."),
         StatusCodes.Status403Forbidden => ("Forbidden.", "You do not have permission to access this resource."),
         StatusCodes.Status404NotFound => ("Not found.", "The requested resource was not found."),
         StatusCodes.Status405MethodNotAllowed => ("Method not allowed.", "The HTTP method is not supported for this route."),
