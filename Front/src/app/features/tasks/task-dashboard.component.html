@@ -1,0 +1,142 @@
+<section class="mb-4">
+  <p class="text-uppercase small fw-bold text-secondary mb-2">Espacio de trabajo</p>
+  <h1 class="page-heading mb-2">Tareas</h1>
+  <p class="page-subtitle mb-0">Crea tareas, asígnalas y sigue su avance.</p>
+</section>
+
+<div class="row g-4 align-items-start">
+  <section class="col-12 col-lg-4" aria-labelledby="create-title">
+    <div class="card-surface p-4">
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 id="create-title" class="section-title">Nueva tarea</h2>
+        <span class="text-secondary small">Pendiente al crear</span>
+      </div>
+
+      <form [formGroup]="createForm" (ngSubmit)="createTask()" novalidate>
+        <div class="mb-3">
+          <label class="form-label" for="task-title">Título</label>
+          <input id="task-title" class="form-control" type="text" formControlName="title"
+            placeholder="Ej. Preparar informe mensual">
+          @if (createForm.controls.title.touched && createForm.controls.title.hasError('required')) {
+            <div class="form-text text-danger">El título es obligatorio.</div>
+          }
+          @if (createForm.controls.title.touched && createForm.controls.title.hasError('maxlength')) {
+            <div class="form-text text-danger">El título no puede superar 255 caracteres.</div>
+          }
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" for="task-user">Asignar a</label>
+          <select id="task-user" class="form-select" formControlName="userId">
+            <option value="">Selecciona un usuario</option>
+            @for (user of users(); track user.id) {
+              <option [value]="user.id">{{ user.name }} · {{ user.email }}</option>
+            }
+          </select>
+          @if (createForm.controls.userId.touched && createForm.controls.userId.invalid) {
+            <div class="form-text text-danger">Selecciona un usuario.</div>
+          }
+        </div>
+
+        <div class="mb-4">
+          <label class="form-label" for="task-info">Información adicional (JSON)</label>
+          <textarea id="task-info" class="form-control json-field" formControlName="additionalInfo"
+            spellcheck="false" aria-describedby="task-info-help"></textarea>
+          <div id="task-info-help" class="form-text">Escribe un objeto JSON. Ejemplo: {{ '{' }}"priority": "High"{{ '}' }}</div>
+          @if (createForm.controls.additionalInfo.touched && createForm.controls.additionalInfo.hasError('jsonInvalid')) {
+            <div class="form-text text-danger">El JSON no es válido.</div>
+          }
+          @if (createForm.controls.additionalInfo.touched && createForm.controls.additionalInfo.hasError('jsonObject')) {
+            <div class="form-text text-danger">La información adicional debe ser un objeto JSON.</div>
+          }
+        </div>
+
+        <button class="btn btn-brand w-100" type="submit" [disabled]="isCreating()">
+          @if (isCreating()) { <span class="spinner-border spinner-border-sm me-2" aria-hidden="true"></span> }
+          {{ isCreating() ? 'Creando…' : 'Crear tarea' }}
+        </button>
+      </form>
+    </div>
+  </section>
+
+  <section class="col-12 col-lg-8" aria-labelledby="list-title">
+    <div class="card-surface p-4">
+      <div class="d-flex flex-column flex-md-row justify-content-between gap-3 mb-4">
+        <div>
+          <h2 id="list-title" class="section-title mb-1">Listado</h2>
+          <span class="text-secondary small">{{ tasks().length }} {{ tasks().length === 1 ? 'tarea' : 'tareas' }}</span>
+        </div>
+        <form class="row g-2" [formGroup]="filterForm">
+          <div class="col-6">
+            <label class="visually-hidden" for="filter-status">Filtrar por estado</label>
+            <select id="filter-status" class="form-select form-select-sm" formControlName="status" (change)="loadTasks()">
+              <option value="">Todos los estados</option>
+              @for (status of statuses(); track status.id) {
+                <option [value]="status.name">{{ status.name }}</option>
+              }
+            </select>
+          </div>
+          <div class="col-6">
+            <label class="visually-hidden" for="filter-user">Filtrar por usuario</label>
+            <select id="filter-user" class="form-select form-select-sm" formControlName="userId" (change)="loadTasks()">
+              <option value="">Todos los usuarios</option>
+              @for (user of users(); track user.id) {
+                <option [value]="user.id">{{ user.name }}</option>
+              }
+            </select>
+          </div>
+        </form>
+      </div>
+
+      @if (isLoading()) {
+        <div class="d-flex justify-content-center py-5" role="status">
+          <span class="spinner-border text-secondary" aria-label="Cargando tareas"></span>
+        </div>
+      } @else if (tasks().length === 0) {
+        <div class="empty-state">
+          <div class="fw-semibold mb-1">No hay tareas para mostrar</div>
+          <div class="small">Prueba otro filtro o crea una nueva tarea.</div>
+        </div>
+      } @else {
+        <div class="table-responsive">
+          <table class="table align-middle mb-0">
+            <thead>
+              <tr class="small text-secondary">
+                <th scope="col">Tarea</th>
+                <th scope="col">Asignada a</th>
+                <th scope="col">Estado</th>
+                <th scope="col">Creada</th>
+                <th scope="col">Cambiar estado</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (task of tasks(); track task.id) {
+                <tr>
+                  <td>
+                    <p class="task-title">{{ task.title }}</p>
+                    <span class="task-meta">{{ task.additionalInfo | json }}</span>
+                  </td>
+                  <td>{{ task.userName }}</td>
+                  <td><span class="status-pill" [ngClass]="statusClass(task.status)">{{ task.status }}</span></td>
+                  <td class="task-meta text-nowrap">{{ task.createdAt | date:'mediumDate' }}</td>
+                  <td>
+                    <label class="visually-hidden" [for]="'status-' + task.id">Nuevo estado</label>
+                    <select class="form-select form-select-sm" [id]="'status-' + task.id"
+                      [value]="task.status" [disabled]="updatingTaskId() === task.id"
+                      (change)="updateStatus(task, $event)">
+                      @for (status of statuses(); track status.id) {
+                        <option [value]="status.name" [disabled]="task.status === 'Pending' && status.name === 'Done'">
+                          {{ status.name }}
+                        </option>
+                      }
+                    </select>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
+    </div>
+  </section>
+</div>

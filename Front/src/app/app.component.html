@@ -1,0 +1,25 @@
+<main class="app-shell container">
+  <header class="app-header">
+    <div class="brand-lockup">
+      <span class="brand-mark" aria-hidden="true">MP</span>
+      <div>
+        <p class="brand-title">MichaelPage</p>
+        <p class="brand-caption">Gestión de tareas</p>
+      </div>
+    </div>
+    @if (authService.isAuthenticated()) {
+      <button class="btn btn-outline-secondary btn-sm" type="button" (click)="logout()">Cerrar sesión</button>
+    }
+  </header>
+
+  @if (notificationService.current(); as notification) {
+    <div class="alert alert-dismissible fade show"
+      [ngClass]="notification.kind === 'success' ? 'alert-success' : 'alert-danger'"
+      role="alert">
+      {{ notification.message }}
+      <button type="button" class="btn-close" aria-label="Cerrar" (click)="dismissNotification()"></button>
+    </div>
+  }
+
+  <router-outlet />
+</main>
