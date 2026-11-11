@@ -44,13 +44,16 @@ public sealed class TaskService(
         return Map(task);
     }
 
-    public async Task<IReadOnlyList<TaskResponse>> GetAllAsync(Guid? userId, string? status, CancellationToken cancellationToken = default)
+    public async Task<IReadOnlyList<TaskResponse>> GetAllAsync(Guid? userId, string? status, string? priority, CancellationToken cancellationToken = default)
     {
         var normalizedStatus = status?.Trim();
         if (!string.IsNullOrEmpty(normalizedStatus) && !TaskStatusNames.All.Contains(normalizedStatus, StringComparer.OrdinalIgnoreCase))
             throw new BusinessRuleException("Status must be Pending, InProgress, or Done.");
+        var normalizedPriority = priority?.Trim();
+        if (normalizedPriority?.Length > 50)
+            throw new BusinessRuleException("Priority must be at most 50 characters.");
 
-        var tasks = await taskRepository.GetAllAsync(userId, normalizedStatus, cancellationToken);
+        var tasks = await taskRepository.GetAllAsync(userId, normalizedStatus, normalizedPriority, cancellationToken);
         return tasks.Select(Map).ToList();
     }
 

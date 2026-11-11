@@ -11,9 +11,12 @@ public sealed class TaskRepository(AppDbContext dbContext) : ITaskRepository
         dbContext.Tasks.Include(task => task.User).Include(task => task.Status)
             .FirstOrDefaultAsync(task => task.Id == id, cancellationToken);
 
-    public async Task<IReadOnlyList<TaskItem>> GetAllAsync(Guid? userId, string? status, CancellationToken cancellationToken = default)
+    public async Task<IReadOnlyList<TaskItem>> GetAllAsync(Guid? userId, string? status, string? priority, CancellationToken cancellationToken = default)
     {
-        var query = dbContext.Tasks.AsNoTracking().Include(task => task.User).Include(task => task.Status).AsQueryable();
+        IQueryable<TaskItem> query = string.IsNullOrWhiteSpace(priority)
+            ? dbContext.Tasks
+            : dbContext.Tasks.FromSqlInterpolated($"SELECT * FROM [Tarea] WHERE JSON_VALUE([Tarea_Informacion], '$.priority') = {priority}");
+        query = query.AsNoTracking().Include(task => task.User).Include(task => task.Status);
         if (userId.HasValue)
             query = query.Where(task => task.UserId == userId.Value);
         if (!string.IsNullOrWhiteSpace(status))

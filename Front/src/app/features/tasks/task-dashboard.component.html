@@ -67,7 +67,7 @@
           <span class="text-secondary small">{{ tasks().length }} {{ tasks().length === 1 ? 'tarea' : 'tareas' }}</span>
         </div>
         <form class="row g-2" [formGroup]="filterForm">
-          <div class="col-6">
+          <div class="col-12 col-md-4">
             <label class="visually-hidden" for="filter-status">Filtrar por estado</label>
             <select id="filter-status" class="form-select form-select-sm" formControlName="status" (change)="loadTasks()">
               <option value="">Todos los estados</option>
@@ -76,7 +76,7 @@
               }
             </select>
           </div>
-          <div class="col-6">
+          <div class="col-12 col-md-4">
             <label class="visually-hidden" for="filter-user">Filtrar por usuario</label>
             <select id="filter-user" class="form-select form-select-sm" formControlName="userId" (change)="loadTasks()">
               <option value="">Todos los usuarios</option>
@@ -84,6 +84,11 @@
                 <option [value]="user.id">{{ user.name }}</option>
               }
             </select>
+          </div>
+          <div class="col-12 col-md-4">
+            <label class="visually-hidden" for="filter-priority">Filtrar por prioridad</label>
+            <input id="filter-priority" class="form-control form-control-sm" type="search"
+              formControlName="priority" placeholder="Prioridad JSON" (change)="loadTasks()">
           </div>
         </form>
       </div>

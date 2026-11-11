@@ -8,10 +8,11 @@ export class TaskService {
   private readonly http = inject(HttpClient);
   private readonly apiUrl = '/api';
 
-  getTasks(status?: string, userId?: string): Observable<TaskItem[]> {
+  getTasks(status?: string, userId?: string, priority?: string): Observable<TaskItem[]> {
     let params = new HttpParams();
     if (status) params = params.set('status', status);
     if (userId) params = params.set('userId', userId);
+    if (priority) params = params.set('priority', priority);
     return this.http.get<TaskItem[]>(`${this.apiUrl}/tasks`, { params });
   }
 

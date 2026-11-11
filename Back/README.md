@@ -4,9 +4,9 @@ REST API in .NET 10, EF Core, and SQL Server. The solution follows the four laye
 
 ## Configuration
 
-The local SQL Server connection and a random 25-character JWT secret are set in `Api/appsettings.json`. The API derives a 256-bit signing key from that secret before using HS256.
+Copy `Api/appsettings.example.json` to `Api/appsettings.json`, then set the local SQL Server connection and a random JWT secret of exactly 25 characters. `appsettings.json` is excluded from Git. The API derives a 256-bit signing key from that secret before using HS256.
 
-The local database already contains the demo account: username `demo`, password `Demo123**`. Its password is stored as a BCrypt hash and its email is `demo@local.test`. The API does not create users automatically at startup. Login accepts `{ "username": "demo", "password": "Demo123**" }`.
+`../ScriptBBDD.sql` creates the demo account: username `demo`, password `Demo123**`. Its password is stored as a BCrypt hash and its email is `demo@local.test`. The API does not create users automatically at startup. Login accepts `{ "username": "demo", "password": "Demo123**" }`.
 
 ## Run
 
@@ -31,7 +31,7 @@ Swagger UI is available at `/swagger`. Sign in there first; the browser then sen
 | POST | `/api/users` | Auth cookie | Creates a user; body: `name`, `email`, `password` |
 | GET | `/api/users` | Auth cookie | Lists users |
 | POST | `/api/tasks` | Auth cookie | Creates a task; body: `title`, `userId`, optional JSON object `additionalInfo` |
-| GET | `/api/tasks?status=Pending&userId=<guid>` | Auth cookie | Lists tasks, filtered by optional status and user, newest first |
+| GET | `/api/tasks?status=Pending&userId=<guid>&priority=High` | Auth cookie | Lists tasks, filtered by optional status, user, and the `priority` JSON value, newest first |
 | PUT | `/api/tasks/{id}/status` | Auth cookie | Changes status; body: `status` |
 | GET | `/api/statuses` | Auth cookie | Lists the seeded statuses |
 | GET | `/api/logs` | Auth cookie | Lists task creation and status change logs |

@@ -39,7 +39,8 @@ export class TaskDashboardComponent implements OnInit {
 
   readonly filterForm = this.formBuilder.nonNullable.group({
     status: [''],
-    userId: ['']
+    userId: [''],
+    priority: ['']
   });
 
   readonly createForm = this.formBuilder.nonNullable.group({
@@ -55,9 +56,9 @@ export class TaskDashboardComponent implements OnInit {
   }
 
   loadTasks(): void {
-    const { status, userId } = this.filterForm.getRawValue();
+    const { status, userId, priority } = this.filterForm.getRawValue();
     this.isLoading.set(true);
-    this.taskService.getTasks(status || undefined, userId || undefined).subscribe({
+    this.taskService.getTasks(status || undefined, userId || undefined, priority.trim() || undefined).subscribe({
       next: tasks => {
         this.tasks.set(tasks);
         this.isLoading.set(false);

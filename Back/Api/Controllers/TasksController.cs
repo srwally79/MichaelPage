@@ -19,8 +19,8 @@ public sealed class TasksController(ITaskService taskService) : ControllerBase
 
     [HttpGet]
     public async Task<ActionResult<IReadOnlyList<TaskResponse>>> GetAll(
-        [FromQuery] string? status, [FromQuery] Guid? userId, CancellationToken cancellationToken) =>
-        Ok(await taskService.GetAllAsync(userId, status, cancellationToken));
+        [FromQuery] string? status, [FromQuery] Guid? userId, [FromQuery] string? priority, CancellationToken cancellationToken) =>
+        Ok(await taskService.GetAllAsync(userId, status, priority, cancellationToken));
 
     [HttpPut("{id:guid}/status")]
     public async Task<ActionResult<TaskResponse>> UpdateStatus(
